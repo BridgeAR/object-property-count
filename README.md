@@ -145,7 +145,7 @@ This creates intermediate arrays, causing unnecessary memory usage and garbage c
 
 On top of that, it is also not possible to identify an array that is sparse without calling `Object.keys()` (or similar). This API would allow that by explicitly checking for own index properties.
 
-## Proposed Syntax
+## Proposed API
 
 ```javascript
 Object.propertyCount(target[, options])
@@ -250,22 +250,22 @@ When the `propertyCount` method is called, the following steps are taken:
 3. Let _keyTypes_ be ? Get(_options_, "keyTypes").
 4. If _keyTypes_ is undefined, set _keyTypes_ to the array `['index', 'nonIndexString']`.
 5. Else, perform the following:
-    a. If Type(_keyTypes_) is not Object, throw a TypeError exception.
-    b. Set _keyTypes_ to an internal List whose elements are the String values of the elements of _keyTypes_.
-    c. If _keyTypes_ contains any value other than "index", "nonIndexString", or "symbol", throw a TypeError exception.
-6. Let _enumerable_ be ? Get(_options_, "enumerable").
-7. If _enumerable_ is undefined, set _enumerable_ to true.
-8. Else if _enumerable_ is not one of true, false, or "all", throw a TypeError exception.
-9.  Let _count_ be 0.
-10. Let _ownKeys_ be the List of own property keys of _target_, in the order returned by OrdinaryOwnPropertyKeys(_target_). (Note: No intermediate array should be allocated.)
-11. For each element _key_ of _ownKeys_, perform the following steps:
-    a. Let _desc_ be ? OrdinaryGetOwnProperty(_target_, _key_).
-    b. If _enumerable_ is not 'all'
+    1. If Type(_keyTypes_) is not Object, throw a TypeError exception.
+    2. Set _keyTypes_ to an internal List whose elements are the String values of the elements of _keyTypes_.
+    3. If _keyTypes_ contains any value other than "index", "nonIndexString", or "symbol", throw a TypeError exception.
+1. Let _enumerable_ be ? Get(_options_, "enumerable").
+2. If _enumerable_ is undefined, set _enumerable_ to true.
+3. Else if _enumerable_ is not one of true, false, or "all", throw a TypeError exception.
+4.  Let _count_ be 0.
+5.  Let _ownKeys_ be the List of own property keys of _target_, in the order returned by OrdinaryOwnPropertyKeys(_target_). (Note: No intermediate array should be allocated.)
+6.  For each element _key_ of _ownKeys_, perform the following steps:
+    1. Let _desc_ be ? OrdinaryGetOwnProperty(_target_, _key_).
+    2. If _enumerable_ is not 'all'
         i. If _enumerable_ is unequal to _desc_.[[Enumerable]], continue to the next _key_.
-    c. If Type(_key_) is Symbol and "symbol" is present in _keyTypes_, increment _count_ by 1.
-    d. Else if Type(_key_) is array index and "index" is present in _keyTypes_, increment _count_ by 1.
-    e. Else if "nonIndexString" is present in _keyTypes_, increment _count_ by 1
-12. Return _count_.
+    3. If Type(_key_) is Symbol and "symbol" is present in _keyTypes_, increment _count_ by 1.
+    4. Else if Type(_key_) is array index and "index" is present in _keyTypes_, increment _count_ by 1.
+    5. Else if "nonIndexString" is present in _keyTypes_, increment _count_ by 1
+7.  Return _count_.
 
 ## Alternatives Considered
 
