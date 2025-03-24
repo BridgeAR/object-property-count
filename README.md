@@ -136,7 +136,7 @@ const count = [
   ...Object.getOwnPropertySymbols(obj)
 ].length;
 
-const reflectCount = Reflect.ownKeys(obj);
+const reflectCount = Reflect.ownKeys(obj).length;
 
 assert.strictEqual(count, reflectCount);
 ```
