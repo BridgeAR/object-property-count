@@ -4,36 +4,60 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
 <script src="./spec.js"></script>
 <pre class="metadata">
-title: Proposal Title Goes Here
+title: Object.propertyCount
 stage: -1
-contributors: Your Name(s) Here
+contributors: Ruben Bridgewater
 </pre>
 
 <emu-clause id="sec-demo-clause">
-  <h1>This is an emu-clause</h1>
-  <p>This is an algorithm:</p>
+  <h1>Object.propertyCount ( _target_ [ , _options_ ] )</h1>
+  <p>When the `Object.propertyCount` method is called, the following steps are taken:</p>
   <emu-alg>
-    1. Let _proposal_ be *undefined*.
-    1. If IsAccepted(_proposal_) is *true*, then
-      1. Let _stage_ be *0*<sub>ℤ</sub>.
-    1. Else,
-      1. Let _stage_ be *-1*<sub>ℤ</sub>.
-    1. Return ? ToString(_stage_).
+    1. If _target_ is not an Object, throw a TypeError exception.
+    1. Let _resolvedOptions_ be ? GetOptionsObject(_options_).
+    1. Let _keyTypes_ be ? Get(_resolvedOptions_, "keyTypes").
+    1. If _keyTypes_ is undefined, then
+        1. Set _keyTypes_ to the array `['index', 'nonIndexString']`.
+    1. Else, perform the following,
+        1. If _keyTypes_ is not an Object, throw a TypeError exception.
+        1. Set _keyTypes_ to an internal List whose elements are the String values of the elements of _keyTypes_.
+        1. If _keyTypes_ contains any value other than "index", "nonIndexString", or "symbol", throw a TypeError exception.
+    1. Let _enumerable_ be ? Get(_resolvedOptions_, "enumerable").
+    1. If _enumerable_ is undefined, set _enumerable_ to true.
+    1. Else if _enumerable_ is not one of true, false, or "all", throw a TypeError exception.
+    1. Let _count_ be 0.
+    1. Let _ownKeys_ be the List of own property keys of _target_, in the order returned by OrdinaryOwnPropertyKeys(_target_). (Note: No intermediate array should be allocated.)
+    1. For each element _key_ of _ownKeys_, perform the following steps, do
+        1. Let _desc_ be OrdinaryGetOwnProperty(_target_, _key_).
+        1. If _enumerable_ is not 'all', then
+            1. If _enumerable_ is unequal to _desc_.[[Enumerable]], continue to the next _key_.
+        1. If _key_ is Symbol and "symbol" is present in _keyTypes_, increment _count_ by 1.
+        1. Else if _key_ is an array index and "index" is present in _keyTypes_, increment _count_ by 1.
+        1. Else if "nonIndexString" is present in _keyTypes_, increment _count_ by 1.
+    1. Return _count_.
   </emu-alg>
 </emu-clause>
 
-<emu-clause id="sec-is-accepted" type="abstract operation">
+<!-- Copied from ECMA-402 GetOptionsObject -->
+
+<emu-clause id="sec-getoptionsobject" type="abstract operation">
   <h1>
-      IsAccepted (
-        _proposal_: an ECMAScript language value
-      ): a Boolean
+    GetOptionsObject (
+      _options_: an ECMAScript language value,
+    ): either a normal completion containing an Object or a throw completion
   </h1>
   <dl class="header">
     <dt>description</dt>
-    <dd>Tells you if the proposal was accepted</dd>
+    <dd>
+      It returns an Object suitable for use with GetOption, either _options_ itself or a default empty Object.
+      It throws a *TypeError* if _options_ is not *undefined* and not an Object.
+    </dd>
   </dl>
   <emu-alg>
-    1. If _proposal_ is not a String, or is not accepted, return *false*.
-    1. Return *true*.
+    1. If _options_ is *undefined*, then
+      1. Return OrdinaryObjectCreate(*null*).
+    1. If _options_ is an Object, then
+      1. Return _options_.
+    1. Throw a *TypeError* exception.
   </emu-alg>
 </emu-clause>

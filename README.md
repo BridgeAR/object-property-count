@@ -21,7 +21,7 @@ const obj = { a: 1, b: 2 };
 const count = Object.keys(obj).length;
 ```
 
-However, this approach creates unnecessary memory overhead and garbage collection pressure, as an intermediate array is allocated solely for counting properties. Highly-used runtimes, frameworks, and libraries (e.g., Node.js, React, Lodash, Angular) frequently utilize `Object.keys(obj).length`, compounding performance issues across applications.
+However, this approach creates unnecessary memory overhead and garbage collection pressure, as an intermediate array is allocated solely for counting properties. Highly-used runtimes, frameworks, and libraries (e.g., Node.js, React, Lodash, Angular, Storybook, Excalidraw, VS Code, Svelte, Next.js, three.js, Puppeteer, Tailwind, ...) frequently utilize `Object.keys(obj).length`, compounding performance issues across applications.
 
 For instance, React often counts props or state keys:
 
@@ -239,33 +239,7 @@ The native implementation should strictly avoid creating intermediate arrays or 
      - If the property meets all criteria, increment the counter.
 3. Return the final count value.
 
-### Object.propertyCount ( _target_ [, _options_ ] )
-
-When the `propertyCount` method is called, the following steps are taken:
-
-**This is work in progress! The Algorithm is not yet fully defined.**
-
-1. If Type(_target_) is not Object, throw a TypeError exception.
-2. If _options_ is undefined, let _options_ be an empty Object.
-3. Let _keyTypes_ be ? Get(_options_, "keyTypes").
-4. If _keyTypes_ is undefined, set _keyTypes_ to the array `['index', 'nonIndexString']`.
-5. Else, perform the following:
-    1. If Type(_keyTypes_) is not Object, throw a TypeError exception.
-    2. Set _keyTypes_ to an internal List whose elements are the String values of the elements of _keyTypes_.
-    3. If _keyTypes_ contains any value other than "index", "nonIndexString", or "symbol", throw a TypeError exception.
-1. Let _enumerable_ be ? Get(_options_, "enumerable").
-2. If _enumerable_ is undefined, set _enumerable_ to true.
-3. Else if _enumerable_ is not one of true, false, or "all", throw a TypeError exception.
-4.  Let _count_ be 0.
-5.  Let _ownKeys_ be the List of own property keys of _target_, in the order returned by OrdinaryOwnPropertyKeys(_target_). (Note: No intermediate array should be allocated.)
-6.  For each element _key_ of _ownKeys_, perform the following steps:
-    1. Let _desc_ be ? OrdinaryGetOwnProperty(_target_, _key_).
-    2. If _enumerable_ is not 'all'
-        i. If _enumerable_ is unequal to _desc_.[[Enumerable]], continue to the next _key_.
-    3. If Type(_key_) is Symbol and "symbol" is present in _keyTypes_, increment _count_ by 1.
-    4. Else if Type(_key_) is array index and "index" is present in _keyTypes_, increment _count_ by 1.
-    5. Else if "nonIndexString" is present in _keyTypes_, increment _count_ by 1
-7.  Return _count_.
+See the [spec proposal](./spec.emu) for details.
 
 ## Alternatives Considered
 
@@ -291,8 +265,16 @@ Frequent patterns in widely-used JavaScript runtimes, frameworks, and libraries 
 ```javascript
 const validTypes = new Set(['index', 'nonIndexString', 'symbol']);
 
-Object.propertyCount = function(target, options = {}) {
-  const { keyTypes = ['index', 'nonIndexString'], enumerable = true } = options;
+Object.propertyCount = function(target, options) {
+  if (typeof target !== 'object' || target === null) {
+    throw new TypeError(`Expected target to be an object. Received ${typeof target}`);
+  }
+
+  if (options === undefined) {
+    return Object.keys(target).length;
+  }
+
+  const { keyTypes = ['index', 'nonIndexString'], enumerable = true } = options || {};
 
   for (const type of keyTypes) {
     if (!validTypes.has(type)) {
@@ -307,13 +289,11 @@ Object.propertyCount = function(target, options = {}) {
   let props = [];
 
   if (keyTypes.includes('index') || keyTypes.includes('nonIndexString')) {
-    let stringProps = Object.getOwnPropertyNames(target);
+    let stringProps = enumerable === 'all' ? Object.getOwnPropertyNames(target) ? Object.keys(target);
 
     if (!keyTypes.includes('nonIndexString')) {
       stringProps = stringProps.filter(key => String(parseInt(key, 10)) === key && parseInt(key, 10) >= 0);
-    }
-
-    if (!keyTypes.includes('index')) {
+    } else if (!keyTypes.includes('index')) {
       stringProps = stringProps.filter(key => String(parseInt(key, 10)) !== key || parseInt(key, 10) < 0);
     }
 
