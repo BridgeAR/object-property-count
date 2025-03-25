@@ -289,7 +289,7 @@ Object.propertyCount = function(target, options) {
   let props = [];
 
   if (keyTypes.includes('index') || keyTypes.includes('nonIndexString')) {
-    let stringProps = enumerable === 'all' ? Object.getOwnPropertyNames(target) ? Object.keys(target);
+    let stringProps = enumerable === true ? Object.keys(target) : Object.getOwnPropertyNames(target);
 
     if (!keyTypes.includes('nonIndexString')) {
       stringProps = stringProps.filter(key => String(parseInt(key, 10)) === key && parseInt(key, 10) >= 0);
