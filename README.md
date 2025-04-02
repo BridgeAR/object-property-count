@@ -32,8 +32,6 @@ const propCount = Object.keys(this.props).length;
 
 Replacing these patterns with a native and optimized counting method significantly reduces memory overhead, garbage collection, and as such, runtime performance impacts.
 
-The implementation in V8 seems quite straight forward, due to the already existing [GetPropertyNames](https://github.com/v8/v8/blob/2b13b925298112a1366f721c8d30c96b8b61aeae/include/v8-object.h#L402-L405) API.
-
 ### Concrete usage examples
 
 I only searched for `Object.keys().length`, since that is the most common one.
