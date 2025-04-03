@@ -16,7 +16,7 @@ This proposal introduces `Object.propertyCount`, a built-in method to efficientl
 
 Developers frequently rely on patterns like:
 
-```javascript
+```js
 const obj = { a: 1, b: 2 };
 const count = Object.keys(obj).length;
 ```
@@ -25,7 +25,7 @@ However, this approach creates unnecessary memory overhead and garbage collectio
 
 For instance, React often counts props or state keys:
 
-```javascript
+```js
 // React component example
 const propCount = Object.keys(this.props).length;
 ```
@@ -128,7 +128,7 @@ Almost all popular JS/TS modules make use of this pattern.
 
 Currently, accurately counting object properties involves verbose and inefficient workarounds:
 
-```javascript
+```js
 const count = [
   ...Object.getOwnPropertyNames(obj),
   ...Object.getOwnPropertySymbols(obj)
@@ -145,7 +145,7 @@ On top of that, it is also not possible to identify an array that is sparse with
 
 ## Proposed API
 
-```javascript
+```js
 Object.propertyCount(target[, options])
 ```
 
@@ -169,51 +169,53 @@ Defaults align closely with `Object.keys` for ease of adoption, ensuring intuiti
 The naming of keyTypes and if it's an array or an object or the like is open for discussion.
 Important is just, that it's possible to differentiate index from non index strings somehow, as well as symbol properties.
 
-Similar applies to the enumerable option: true, false, and "all" seems cleanest, but it's not important how they are named.
+Similar applies to the enumerable option: true, false, and `'all'` seems cleanest, but it's not important how they are named.
 
 ## Detailed Examples and Edge Cases
 
 - **Empty object**:
 
-```javascript
+```js
 Object.propertyCount({}); // returns 0
 ```
 
 - **Object without prototype**:
 
-```javascript
+```js
 const obj = Object.create(null);
 obj.property = 1;
 Object.propertyCount(obj); // returns 1
 ```
 
-```javascript
-Object.propertyCount({ __proto__: null }); // returns 0
+```js
+const obj2 = { __proto__: null });
+obj2.property = 1;
+Object.propertyCount(obj2); // returns 1
 ```
 
 - **Array index keys**:
 
 See https://tc39.es/ecma262/#array-index
 
-```javascript
-let obj = { "01": "string key", 1: "index", 2: "index" };
+```js
+let obj = { '01': 'string key', 1: index, 2: 'index' };
 Object.propertyCount(obj, { keyTypes: ['index'] }); // returns 2
 
-obj = { "0": "index", "-1": "string key", "01": "string key" };
-Object.propertyCount(obj, { keyTypes: ['index'] }); // returns 1 (only "0")
+obj = { '0': 'index', '-1': 'string key', '01': 'string key' };
+Object.propertyCount(obj, { keyTypes: ['index'] }); // returns 1 (only '0')
 ```
 
 - **String based keys**:
 
-```javascript
-const obj = { "01": "string key", 1: "index", 2: "index" };
+```js
+const obj = { '01': 'string key', 1: 'index', 2: 'index' };
 Object.propertyCount(obj, { keyTypes: ['nonIndexString'] }); // returns 1
 ```
 
 - **Symbol based keys**:
 
-```javascript
-const obj = { [Symbol()]: "symbol", 1: "index", 2: "index" };
+```js
+const obj = { [Symbol()]: 'symbol', 1: 'index', 2: 'index' };
 Object.propertyCount(obj, { keyTypes: ['symbol'] }); // returns 1
 ```
 
@@ -260,10 +262,11 @@ Frequent patterns in widely-used JavaScript runtimes, frameworks, and libraries 
 
 ## Polyfill
 
-```javascript
+```js
+// NOTE: do not use this polyfill in a production environment
 const validTypes = new Set(['index', 'nonIndexString', 'symbol']);
 
-Object.propertyCount = function(target, options) {
+Object.propertyCount = function (target, options) {
   if (typeof target !== 'object' || target === null) {
     throw new TypeError(`Expected target to be an object. Received ${typeof target}`);
   }
