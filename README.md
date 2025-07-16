@@ -2,7 +2,7 @@
 
 ## Status
 
-Champion: Jordan Harband
+Champion: Ruben Bridgewater, Jordan Harband
 
 Author: Ruben Bridgewater <ruben@bridgewater.de>
 
@@ -155,8 +155,8 @@ Object.propertyCount(target[, options])
   - Throws `TypeError` if target is not an object.
 - **`options`** *(optional)*: An object specifying filtering criteria:
   - `keyTypes`: Array specifying property types to include:
-    - Possible values: `'index'`, `'nonIndexString'`, `'symbol'`.
-    - Defaults to `['index', 'nonIndexString']` (aligning closely with `Object.keys`).
+    - Possible values: `'string'`, `'symbol'`, and `'all'`.
+    - Defaults to `'string'` (aligning closely with `Object.keys`).
     - Throws `TypeError` if provided invalid values.
   - `enumerable`: Indicates property enumerability:
     - `true` to count only enumerable properties (default).
@@ -167,7 +167,6 @@ Object.propertyCount(target[, options])
 Defaults align closely with `Object.keys` for ease of adoption, ensuring intuitive behavior without needing explicit configuration in common cases.
 
 The naming of keyTypes and if it's an array or an object or the like is open for discussion.
-Important is just, that it's possible to differentiate index from non index strings somehow, as well as symbol properties.
 
 Similar applies to the enumerable option: true, false, and `'all'` seems cleanest, but it's not important how they are named.
 
@@ -198,25 +197,25 @@ Object.propertyCount(obj2); // returns 1
 See https://tc39.es/ecma262/#array-index
 
 ```js
-let obj = { '01': 'string key', 1: index, 2: 'index' };
-Object.propertyCount(obj, { keyTypes: ['index'] }); // returns 2
+let obj = { "01": "string key", 1: "index", 2: "index" };
+Object.propertyCount(obj, { keyTypes: ['string'] }); // returns 3
 
-obj = { '0': 'index', '-1': 'string key', '01': 'string key' };
-Object.propertyCount(obj, { keyTypes: ['index'] }); // returns 1 (only '0')
+obj = { "0": "index", "-1": "string key", "01": "string key" };
+Object.propertyCount(obj, { keyTypes: ['string'] }); // returns 3
 ```
 
 - **String based keys**:
 
 ```js
-const obj = { '01': 'string key', 1: 'index', 2: 'index' };
-Object.propertyCount(obj, { keyTypes: ['nonIndexString'] }); // returns 1
+const obj = { "01": "string key", 1: "index", 2: "index" };
+Object.propertyCount(obj, { keyTypes: ['string'] }); // returns 3
 ```
 
 - **Symbol based keys**:
 
 ```js
-const obj = { [Symbol()]: 'symbol', 1: 'index', 2: 'index' };
-Object.propertyCount(obj, { keyTypes: ['symbol'] }); // returns 1
+const obj = { [Symbol()]: "symbol", 1: "index", 2: "index" };
+Object.propertyCount(obj, { keyTypes: ['symbol'] }); // returns 2
 ```
 
 ## Explicit Semantics
@@ -233,7 +232,7 @@ The native implementation should strictly avoid creating intermediate arrays or 
 2. Iterate directly over the object's own property descriptors
    - Access the internal property keys directly via the object's internal slots.
    - For each own property:
-     - Determine if the key is a numeric index, a regular non-index string, or a symbol.
+     - Determine if the key is a string or a symbol.
      - Check if the property type matches any specified in `keyTypes`.
      - If `enumerable` is not `'all'`, match the property's enumerability against the provided boolean value.
      - If the property meets all criteria, increment the counter.
@@ -244,38 +243,40 @@ See the [spec proposal](./spec.emu) for details.
 ## Alternatives Considered
 
 - **Multiple separate methods**: Rejected due to increased cognitive load and API complexity.
+- **Using booleans for key types**: The default would have diverging boolean defaults for different key types (in other words, 4 possible combinations for only 3 possible states). Thus, an enum is considered a better approach.
 
 ## TC39 Stages and Champion
 
-- Ready for **Stage 1** (proposal)
+- Ready for **Stage 2**
 
 ## Use Cases
 
 - Improved readability and explicit intent
-- Significant performance gains
-- Reduced memory overhead
-- Simpler code
+- Significant **performance** gains
+- **Reduced memory** overhead
+- **Simpler code**
 
 ## Precedent
 
 Frequent patterns in widely-used JavaScript runtimes, frameworks, and libraries (Node.js, React, Angular, Lodash) demonstrate the common need for an optimized property counting mechanism.
 
+The regular expression exec/match/matchAll methods produce a "match object" that is an Array, with non-index string properties on it (lastIndex, groups, etc).
+
 ## Polyfill
 
 ```js
-// NOTE: do not use this polyfill in a production environment
-const validTypes = new Set(['index', 'nonIndexString', 'symbol']);
+const validTypes = new Set(['string', 'symbol']);
 
-Object.propertyCount = function (target, options) {
+Object.propertyCount = function propertyCount(target, options) {
   if (typeof target !== 'object' || target === null) {
     throw new TypeError(`Expected target to be an object. Received ${typeof target}`);
   }
 
-  if (options === undefined) {
+  if (typeof options === 'undefined') {
     return Object.keys(target).length;
   }
 
-  const { keyTypes = ['index', 'nonIndexString'], enumerable = true } = options || {};
+  const { keyTypes = ['string'], enumerable = true } = options || {};
 
   for (const type of keyTypes) {
     if (!validTypes.has(type)) {
@@ -289,16 +290,8 @@ Object.propertyCount = function (target, options) {
 
   let props = [];
 
-  if (keyTypes.includes('index') || keyTypes.includes('nonIndexString')) {
-    let stringProps = enumerable === true ? Object.keys(target) : Object.getOwnPropertyNames(target);
-
-    if (!keyTypes.includes('nonIndexString')) {
-      stringProps = stringProps.filter(key => String(parseInt(key, 10)) === key && parseInt(key, 10) >= 0);
-    } else if (!keyTypes.includes('index')) {
-      stringProps = stringProps.filter(key => String(parseInt(key, 10)) !== key || parseInt(key, 10) < 0);
-    }
-
-    props = stringProps;
+  if (keyTypes.includes('string')) {
+    props = enumerable === true ? Object.keys(target) : Object.getOwnPropertyNames(target);
   }
 
   if (keyTypes.includes('symbol')) {
@@ -319,6 +312,7 @@ Object.propertyCount = function (target, options) {
 - **Performance**: Native implementation will significantly outperform existing approaches by eliminating intermediate arrays.
 - **Flexibility**: Enumerable properties counted by default; easy inclusion/exclusion.
 - **Simplicity**: Improved code readability and clarity.
+- **Future proofing**: The second argument is an options object and this potentially allows future additions (e.g., to include inherited properties, or only writable properties, etc).
 
 ## Conclusion
 
