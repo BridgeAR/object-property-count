@@ -1,17 +1,10 @@
 <!doctype html>
-<head><meta name="viewport" content="width=device-width, initial-scale=1"><meta charset="utf-8"><meta property="og:image" content="https://tc39.es/ecmarkup/ecma-logo.png"><meta property="og:title" content="Object.propertyCount"><meta property="og:description" content="Fundamental Objects
-
+<head><meta name="viewport" content="width=device-width, initial-scale=1"><meta charset="utf-8"><meta property="og:image" content="https://tc39.es/ecmarkup/ecma-logo.png"><meta property="og:title" content="Object.propertyCount"><meta property="og:description" content="Object.propertyCount ( _target_ [ , _options_ ] )
+  When the `Object.propertyCount` method is called, the following steps are taken:
   
-    Object Objects
-
-    
-      Properties of the Object Constructor
-
-      
-        Object.propertyCount ( _target_ [ , _options_ ] )
-        When the `Object.propertyCount` method is called, the following steps are taken:
-        
-          1. If _target_ is not an Object">
+    1. If _target_ is not an Object, throw a TypeError exception.
+    1. Let _resolvedOptions_ be ? GetOptionsObject(_options_).
+    1. Let _keyTypes_ be ? Get(_">
 <link rel="stylesheet" href="./spec.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
 <script src="./spec.js"></script>
@@ -1630,7 +1623,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let sdoMap = JSON.parse(`{}`);
-let biblio = JSON.parse(`{"refsByClause":{"sec-object.propertycount":["_ref_0"]},"entries":[{"type":"clause","id":"sec-object.propertycount","title":"Object.propertyCount ( target [ , options ] )","titleHTML":"Object.propertyCount ( <var>target</var> [ , <var>options</var> ] )","number":"20.1.2.20"},{"type":"clause","id":"sec-properties-of-the-object-constructor","titleHTML":"Properties of the Object Constructor","number":"20.1.2"},{"type":"clause","id":"sec-object-objects","titleHTML":"Object Objects","number":"20.1"},{"type":"clause","id":"sec-fundamental-objects","titleHTML":"Fundamental Objects","number":"20"},{"type":"op","aoid":"GetOptionsObject","refId":"sec-getoptionsobject"},{"type":"clause","id":"sec-getoptionsobject","title":"GetOptionsObject ( options )","titleHTML":"GetOptionsObject ( <var>options</var> )","number":"21","referencingIds":["_ref_0"]},{"type":"clause","id":"sec-copyright-and-software-license","title":"Copyright & Software License","titleHTML":"Copyright &amp; Software License","number":"A"}]}`);
+let biblio = JSON.parse(`{"refsByClause":{"sec-demo-clause":["_ref_0"]},"entries":[{"type":"clause","id":"sec-demo-clause","title":"Object.propertyCount ( target [ , options ] )","titleHTML":"Object.propertyCount ( <var>target</var> [ , <var>options</var> ] )","number":"1"},{"type":"op","aoid":"GetOptionsObject","refId":"sec-getoptionsobject"},{"type":"clause","id":"sec-getoptionsobject","title":"GetOptionsObject ( options )","titleHTML":"GetOptionsObject ( <var>options</var> )","number":"2","referencingIds":["_ref_0"]},{"type":"clause","id":"sec-copyright-and-software-license","title":"Copyright & Software License","titleHTML":"Copyright &amp; Software License","number":"A"}]}`);
 ;let usesMultipage = false</script><style>:root {
   --foreground-color: #111;
   --background-color: #fff;
@@ -1920,6 +1913,23 @@ h1.shortname { display: none; }
 
 body.oldtoc {
   margin: 0 auto;
+}
+
+#metadata-block {
+  margin: 4em 0;
+  padding: 10px;
+  border: 1px solid #ee8421;
+}
+
+#metadata-block h1 {
+  font-size: 1.5em;
+  margin-top: 0;
+}
+
+#metadata-block > ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 
 span[aria-hidden='true'] {
@@ -3260,6 +3270,7 @@ emu-normative-optional,
 
 #ecma-logo {
   background: var(--figure-background);
+  width: 500px;
 }
 </style><style>@media print {
 @font-face {
@@ -3333,6 +3344,7 @@ emu-normative-optional,
 
 :root {
   --page-number-style: decimal;
+  -prince-change-line-breaks-for-pagination: yes; /* see https://www.princexml.com/doc/prince-for-books/#pagination-fine-tuning */
 }
 
 @page {
@@ -3341,16 +3353,16 @@ emu-normative-optional,
   margin-bottom: 20mm;
   margin-inside: 19mm;
   margin-outside: 13mm;
-  -prince-page-fill: prefer-fill;
+  -prince-page-fill: prefer-balance; /* see https://www.princexml.com/doc/prince-for-books/#the-property--prince-page-fill */
 
-  /* Uncomment when producing WIP versions of final standards */
+  /* Uncomment when producing WIP versions of final standards, see https://www.princexml.com/doc/paged/#page-regions */
   /*
   @prince-overlay {
     color: rgba(0,0,0,0.15);
-    content: "WORK IN PROGRESS";
+    content: "DRAFT";
     font-family: Arial;
     font-weight: bolder;
-    font-size: 100pt;
+    font-size: 200pt;
     transform: rotate(-60deg);
   }
   */
@@ -3460,7 +3472,7 @@ body {
   line-height: 1.15;
 }
 
-h1, h2, h3, h4, h5, h6 { -prince-bookmark-level: none }
+h1, h2, h3, h4, h5, h6 { -prince-bookmark-level: none } /* see https://www.princexml.com/doc/prince-output/#pdf-bookmarks */
 
 .copyright-notice + h1.title {
   break-before: recto;
@@ -3480,13 +3492,22 @@ p {
   text-wrap: pretty;
   overflow-wrap: break-word;
   hyphens: auto;
-  orphans: 2;
-  widows: 2;
+  orphans: 2, -prince-prefer 3; /* see https://www.princexml.com/doc/prince-for-books/#pagination-goals */
+  widows: 2, -prince-prefer 3;
 }
 
 h1 {
   text-wrap: balance;
   line-height: 1.4;
+}
+
+pre:has(> code) {
+  margin: 0;
+}
+
+p + pre:has(+ p) {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 emu-alg {
@@ -3527,6 +3548,10 @@ emu-alg ol li:last-child {
   break-after: initial; /* it's okay to break after the last item in a list, even if it's also the first item in the list */
 }
 
+emu-normative-optional {
+  break-inside: avoid;
+}
+
 emu-normative-optional emu-clause[id] {
   margin-top: 0;
 }
@@ -3543,6 +3568,10 @@ emu-note {
 emu-note .note {
   font-size: 9pt;
   min-width: 4.5em;
+}
+
+emu-note table td {
+  background-color: white;
 }
 
 emu-note p,
@@ -3573,7 +3602,6 @@ emu-intro, emu-clause, emu-annex {
 }
 
 emu-clause p:first-of-type {
-  margin-bottom: 0;
   orphans: 3;
 }
 
@@ -3693,7 +3721,7 @@ caption, table > figcaption {
 }
 
 caption {
-  -prince-caption-page: first;
+  -prince-caption-page: first; /* see https://www.princexml.com/doc/css-props/#prop-prince-caption-page */
 }
 
 /* do not break inside of small tables */
@@ -3732,6 +3760,11 @@ emu-figure img {
   margin-top: 1ex;
   max-width: 100%;
   height: auto;
+}
+
+.attributes-tag {
+  break-before: avoid-page;
+  break-after: avoid-page;
 }
 
 #spec-container {
@@ -3829,8 +3862,8 @@ emu-annex > h1 .secnum {
   border: 1px solid black;
   padding: 1em;
   page: copyright;
-  page-break-before: always;
-  page-break-after: always;
+  break-before: page;
+  break-after: page;
 }
 
 .secnum {
@@ -3958,30 +3991,18 @@ p.ECMAaddress {
 </ul></div><div id="menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; stroke:currentColor" viewBox="0 0 120 120" width="54" height="54">
       <title>Menu</title>
       <path stroke-width="10" stroke-linecap="round" d="M30,60 h60  M30,30 m0,5 h60  M30,90 m0,-5 h60"></path>
-    </svg></div><div id="menu-spacer" class="menu-spacer"></div><div id="menu"><div id="menu-search"><input type="text" id="menu-search-box" placeholder="Search..."><div id="menu-search-results" class="inactive"></div></div><div id="menu-pins"><div class="menu-pane-header">Pins<button class="unpin-all">clear</button></div><ul id="menu-pins-list"></ul></div><div class="menu-pane-header">Table of Contents</div><div id="menu-toc"><ol class="toc"><li><span class="item-toggle">+</span><a href="#sec-fundamental-objects" title="Fundamental Objects"><span class="secnum">20</span> Fundamental Objects</a><ol class="toc"><li><span class="item-toggle">+</span><a href="#sec-object-objects" title="Object Objects"><span class="secnum">20.1</span> Object Objects</a><ol class="toc"><li><span class="item-toggle">+</span><a href="#sec-properties-of-the-object-constructor" title="Properties of the Object Constructor"><span class="secnum">20.1.2</span> Properties of the Object Constructor</a><ol class="toc"><li><span class="item-toggle-none"></span><a href="#sec-object.propertycount" title="Object.propertyCount ( target [ , options ] )"><span class="secnum">20.1.2.20</span> Object.propertyCount ( <var>target</var> [ , <var>options</var> ] )</a></li></ol></li></ol></li></ol></li><li><span class="item-toggle-none"></span><a href="#sec-getoptionsobject" title="GetOptionsObject ( options )"><span class="secnum">21</span> GetOptionsObject ( <var>options</var> )</a></li><li><span class="item-toggle-none"></span><a href="#sec-copyright-and-software-license" title="Copyright &amp; Software License">Copyright &amp; Software License</a></li></ol></div></div><div id="spec-container"><h1 class="version">Stage 0 Draft / July 15, 2025</h1><h1 class="title">Object.propertyCount</h1>
+    </svg></div><div id="menu-spacer" class="menu-spacer"></div><div id="menu"><div id="menu-search"><input type="text" id="menu-search-box" placeholder="Search..."><div id="menu-search-results" class="inactive"></div></div><div id="menu-pins"><div class="menu-pane-header">Pins<button class="unpin-all">clear</button></div><ul id="menu-pins-list"></ul></div><div class="menu-pane-header">Table of Contents</div><div id="menu-toc"><ol class="toc"><li><span class="item-toggle-none"></span><a href="#sec-demo-clause" title="Object.propertyCount ( target [ , options ] )"><span class="secnum">1</span> Object.propertyCount ( <var>target</var> [ , <var>options</var> ] )</a></li><li><span class="item-toggle-none"></span><a href="#sec-getoptionsobject" title="GetOptionsObject ( options )"><span class="secnum">2</span> GetOptionsObject ( <var>options</var> )</a></li><li><span class="item-toggle-none"></span><a href="#sec-copyright-and-software-license" title="Copyright &amp; Software License">Copyright &amp; Software License</a></li></ol></div></div><div id="spec-container"><h1 class="version">Stage 1 Draft / July 31, 2025</h1><h1 class="title">Object.propertyCount</h1>
 
-<emu-clause id="sec-fundamental-objects" number="20">
-  <h1><span class="secnum">20</span> Fundamental Objects</h1>
-
-  <emu-clause id="sec-object-objects">
-    <h1><span class="secnum">20.1</span> Object Objects</h1>
-
-    <emu-clause id="sec-properties-of-the-object-constructor" number="2">
-      <h1><span class="secnum">20.1.2</span> Properties of the Object Constructor</h1>
-
-      <emu-clause id="sec-object.propertycount" number="20">
-        <h1><span class="secnum">20.1.2.20</span> Object.propertyCount ( <var>target</var> [ , <var>options</var> ] )</h1>
-        <p>When the <code>Object.propertyCount</code> method is called, the following steps are taken:</p>
-        <emu-alg><ol><li>If <var>target</var> <emu-xref href="#sec-object-type"><a href="https://tc39.es/ecma262/#sec-object-type">is not an Object</a></emu-xref>, throw a TypeError exception.</li><li>Let <var>resolvedOptions</var> be ?&nbsp;<emu-xref aoid="GetOptionsObject" id="_ref_0"><a href="#sec-getoptionsobject">GetOptionsObject</a></emu-xref>(<var>options</var>).</li><li>Let <var>keyTypes</var> be <emu-xref aoid="CreateArrayFromList"><a href="https://tc39.es/ecma262/#sec-createarrayfromlist">CreateArrayFromList</a></emu-xref>(« <emu-val>"index"</emu-val>, <emu-val>"nonIndexString"</emu-val>&nbsp;»).</li><li>Let <var>keyTypesOption</var> be ?&nbsp;<emu-xref aoid="Get"><a href="https://tc39.es/ecma262/#sec-get-o-p">Get</a></emu-xref>(<var>resolvedOptions</var>, <emu-val>"keyTypes"</emu-val>).</li><li>If <var>keyTypesOption</var> is not <emu-val>undefined</emu-val>, then<ol><li>If <var>keyTypesOption</var> <emu-xref href="#sec-object-type"><a href="https://tc39.es/ecma262/#sec-object-type">is not an Object</a></emu-xref>, throw a TypeError exception.</li><li>Set <var>keyTypes</var> to ?&nbsp;<emu-xref aoid="CreateListFromArrayLike"><a href="https://tc39.es/ecma262/#sec-createlistfromarraylike">CreateListFromArrayLike</a></emu-xref>(<var>keyTypesOption</var>).</li><li>If <var>keyTypes</var> contains any value other than <emu-val>"index"</emu-val>, <emu-val>"nonIndexString"</emu-val>, or <emu-val>"symbol"</emu-val>, or if any of those values are repeated, throw a TypeError exception.</li></ol></li><li>Let <var>enumerable</var> be ?&nbsp;<emu-xref aoid="Get"><a href="https://tc39.es/ecma262/#sec-get-o-p">Get</a></emu-xref>(<var>resolvedOptions</var>, <emu-val>"enumerable"</emu-val>).</li><li>If <var>enumerable</var> is <emu-val>undefined</emu-val>, set <var>enumerable</var> to <emu-val>true</emu-val>.</li><li>If <var>enumerable</var> is not one of <emu-val>true</emu-val>, <emu-val>false</emu-val>, or <emu-val>"all"</emu-val>, throw a TypeError exception.</li><li>Let <var>count</var> be 0.</li><li>Let <var>ownKeys</var> be <var>target</var>.<var class="field">[[OwnPropertyKeys]]</var>().</li><li>For each element <var>key</var> of <var>ownKeys</var>, do<ol><li>Let <var>desc</var> be ?&nbsp;<var>target</var>.<var class="field">[[GetOwnProperty]]</var>(<var>key</var>).</li><li>If <var>desc</var> is not <emu-val>undefined</emu-val>, and either <var>enumerable</var> is <emu-val>"all"</emu-val> or <var>enumerable</var> is <var>desc</var>.<var class="field">[[Enumerable]]</var>, then<ol><li>If <var>key</var> <emu-xref href="#sec-ecmascript-language-types-symbol-type"><a href="https://tc39.es/ecma262/#sec-ecmascript-language-types-symbol-type">is a Symbol</a></emu-xref> and <var>keyTypes</var> contains <emu-val>"symbol"</emu-val>, increment <var>count</var> by 1.</li><li>Else if <var>key</var> is an <emu-xref href="#array-index"><a href="https://tc39.es/ecma262/#array-index">array index</a></emu-xref> and <var>keyTypes</var> contains <emu-val>"index"</emu-val>, increment <var>count</var> by 1.</li><li>Else if <var>keyTypes</var> contains <emu-val>"nonIndexString"</emu-val>, increment <var>count</var> by 1.</li></ol></li></ol></li><li>Return <var>count</var>.</li></ol></emu-alg>
-      </emu-clause>
-    </emu-clause>
-  </emu-clause>
+<emu-clause id="sec-demo-clause">
+  <h1><span class="secnum">1</span> Object.propertyCount ( <var>target</var> [ , <var>options</var> ] )</h1>
+  <p>When the <code>Object.propertyCount</code> method is called, the following steps are taken:</p>
+  <emu-alg><ol><li>If <var>target</var> <emu-xref href="#sec-object-type"><a href="https://tc39.es/ecma262/#sec-object-type">is not an Object</a></emu-xref>, throw a TypeError exception.</li><li>Let <var>resolvedOptions</var> be ?&nbsp;<emu-xref aoid="GetOptionsObject" id="_ref_0"><a href="#sec-getoptionsobject">GetOptionsObject</a></emu-xref>(<var>options</var>).</li><li>Let <var>keyTypes</var> be ?&nbsp;<emu-xref aoid="Get"><a href="https://tc39.es/ecma262/#sec-get-o-p">Get</a></emu-xref>(<var>resolvedOptions</var>, <emu-val>"keyTypes"</emu-val>).</li><li>If <var>keyTypes</var> is <emu-val>undefined</emu-val>, then<ol><li>Set <var>keyTypes</var> to <emu-xref aoid="CreateArrayFromList"><a href="https://tc39.es/ecma262/#sec-createarrayfromlist">CreateArrayFromList</a></emu-xref>(« <emu-val>"string"</emu-val>&nbsp;»).</li></ol></li><li>Else, perform the following,<ol><li>If <var>keyTypes</var> <emu-xref href="#sec-object-type"><a href="https://tc39.es/ecma262/#sec-object-type">is not an Object</a></emu-xref>, throw a TypeError exception.</li><li>Set <var>keyTypes</var> to ?&nbsp;<emu-xref aoid="CreateListFromArrayLike"><a href="https://tc39.es/ecma262/#sec-createlistfromarraylike">CreateListFromArrayLike</a></emu-xref>(<var>keyTypes</var>, <emu-const>all</emu-const>).</li><li>If <var>keyTypes</var> contains any value other than <emu-val>"string"</emu-val>, or <emu-val>"symbol"</emu-val>, throw a TypeError exception.</li></ol></li><li>Let <var>enumerable</var> be ?&nbsp;<emu-xref aoid="Get"><a href="https://tc39.es/ecma262/#sec-get-o-p">Get</a></emu-xref>(<var>resolvedOptions</var>, <emu-val>"enumerable"</emu-val>).</li><li>If <var>enumerable</var> is <emu-val>undefined</emu-val>, set <var>enumerable</var> to <emu-val>true</emu-val>.</li><li>Else if <var>enumerable</var> is not one of <emu-val>true</emu-val>, <emu-val>false</emu-val>, or <emu-val>"all"</emu-val>, throw a TypeError exception.</li><li>Let <var>count</var> be 0.</li><li>Let <var>ownKeys</var> be <var>target</var>.<var class="field">[[OwnPropertyKeys]]</var>().</li><li>For each element <var>key</var> of <var>ownKeys</var>, perform the following steps, do<ol><li>Let <var>desc</var> be <var>target</var>.<var class="field">[[GetOwnProperty]]</var>(<var>key</var>).</li><li>If <var>desc</var> is not <emu-val>undefined</emu-val>, then<ol><li>If <var>enumerable</var> is not <emu-val>"all"</emu-val>, then<ol><li>If <var>enumerable</var> is not equal to <var>desc</var>.<var class="field">[[Enumerable]]</var>, continue to the next <var>key</var>.</li></ol></li><li>If <var>key</var> <emu-xref href="#sec-ecmascript-language-types-symbol-type"><a href="https://tc39.es/ecma262/#sec-ecmascript-language-types-symbol-type">is a Symbol</a></emu-xref> and <var>keyTypes</var> contains <emu-val>"symbol"</emu-val>, increment <var>count</var> by 1.</li><li>If <var>key</var> <emu-xref href="#sec-ecmascript-language-types-string-type"><a href="https://tc39.es/ecma262/#sec-ecmascript-language-types-string-type">is a String</a></emu-xref> and <var>keyTypes</var> contains <emu-val>"string"</emu-val>, increment <var>count</var> by 1.</li></ol></li></ol></li><li>Return <emu-xref aoid="𝔽"><a href="https://tc39.es/ecma262/#𝔽">𝔽</a></emu-xref>(<var>count</var>).</li></ol></emu-alg>
 </emu-clause>
 
 <!-- Copied from ECMA-402 GetOptionsObject -->
 
 <emu-clause id="sec-getoptionsobject" type="abstract operation" aoid="GetOptionsObject">
-  <h1><span class="secnum">21</span> GetOptionsObject ( <var>options</var> )</h1>
+  <h1><span class="secnum">2</span> GetOptionsObject ( <var>options</var> )</h1>
   <p>The abstract operation GetOptionsObject takes argument <var>options</var> (an <emu-xref href="#sec-ecmascript-language-types"><a href="https://tc39.es/ecma262/#sec-ecmascript-language-types">ECMAScript language value</a></emu-xref>) and returns either a <emu-xref href="#sec-completion-record-specification-type"><a href="https://tc39.es/ecma262/#sec-completion-record-specification-type">normal completion containing</a></emu-xref> an Object or a <emu-xref href="#sec-completion-record-specification-type"><a href="https://tc39.es/ecma262/#sec-completion-record-specification-type">throw completion</a></emu-xref>. 
       It returns an Object suitable for use with GetOption, either <var>options</var> itself or a default empty Object.
       It throws a <emu-val>TypeError</emu-val> if <var>options</var> is not <emu-val>undefined</emu-val> and not an Object.
